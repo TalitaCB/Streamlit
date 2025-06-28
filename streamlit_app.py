@@ -8,11 +8,19 @@ def load_data(file):
     df = pd.read_csv(file, sep=';', encoding='utf-8-sig')  # ajuste sep se for vírgula
     df.columns = df.columns.str.strip().str.lower()
     df['data'] = pd.to_datetime(df['data'], dayfirst=True)
-    df['mes']           = df['data'].dt.to_period('M').astype(str)
-    df['semana']        = df['data'].dt.isocalendar().week
-    df['dia']           = df['data'].dt.date
-    df['dia_da_semana'] = df['data'].dt.day_name(locale='pt_BR')
+
+    # mapeia manualmente dia da semana em Português
+    weekdays_pt = [
+        'Segunda-feira','Terça-feira','Quarta-feira',
+        'Quinta-feira','Sexta-feira','Sábado','Domingo'
+    ]
+    df['dia_da_semana'] = df['data'].dt.weekday.map(lambda d: weekdays_pt[d])
+
+    df['mes']    = df['data'].dt.to_period('M').astype(str)
+    df['semana'] = df['data'].dt.isocalendar().week
+    df['dia']    = df['data'].dt.date
     return df
+
 
 # 2. Configuração da página
 st.set_page_config(layout="wide", page_title="Dashboard de Vendas")
