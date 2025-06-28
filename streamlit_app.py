@@ -24,6 +24,19 @@ if not uploaded:
 
 df = load_data(uploaded)
 
+
+
+@st.cache_data
+def load_data(uploaded_file):
+    df = pd.read_csv(uploaded_file)             # sem parse_dates por enquanto
+    st.write("Colunas encontradas:", df.columns.tolist())
+    return df
+
+uploaded = st.file_uploader("CSV", type="csv")
+if uploaded:
+    df = load_data(uploaded)
+
+
 # 3) Sidebar de filtros
 st.sidebar.header("⛓️ Filtros")
 min_data, max_data = df['data'].min(), df['data'].max()
