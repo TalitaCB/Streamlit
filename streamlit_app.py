@@ -3,14 +3,17 @@ import pandas as pd
 import plotly.express as px
 
 # 1) Carregamento e pré-processamento
+
+
 @st.cache_data
-def load_data(uploaded_file):
-    df = pd.read_csv(uploaded_file, parse_dates=['data'])
-    # colunas de tempo
-    df['mes'] = df['data'].dt.to_period('M').astype(str)
-    df['semana'] = df['data'].dt.isocalendar().week
-    df['dia'] = df['data'].dt.date
-    df['dia_da_semana'] = df['data'].dt.day_name(locale='pt_BR')
+def load_data(f):
+    df = pd.read_csv(f, encoding='utf-8-sig', sep=';')  # ajuste sep conforme preciso
+    # normaliza nomes: tira espaços, converte p/ lowercase
+    df.columns = df.columns.str.strip().str.lower()
+    # aí já temos 'data' “limpinho”
+    df['data'] = pd.to_datetime(df['data'], dayfirst=True)
+    # gera mes, semana, etc...
+    # ...
     return df
 
 st.set_page_config(layout="wide", page_title="Dashboard de Vendas")
@@ -26,15 +29,6 @@ df = load_data(uploaded)
 
 
 
-@st.cache_data
-def load_data(uploaded_file):
-    df = pd.read_csv(uploaded_file)             # sem parse_dates por enquanto
-    st.write("Colunas encontradas:", df.columns.tolist())
-    return df
-
-uploaded = st.file_uploader("CSV", type="csv")
-if uploaded:
-    df = load_data(uploaded)
 
 
 # 3) Sidebar de filtros
